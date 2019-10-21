@@ -101,6 +101,14 @@ type TypeInfo struct {
 	//Interfaces []*TypeInfo
 }
 
+func (t *TypeInfo) Is(pt primitiveType) bool {
+	if t.T == nil {
+		return t.PrimitiveType == pt
+	} else {
+		return t.T.Is(pt)
+	}
+}
+
 type FieldInfo struct {
 	Pointer bool
 	*TypeInfo
