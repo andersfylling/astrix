@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - master
+name: quality check
+jobs:
+  tests:
+    name: Tests & code coverage
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        go: ['1.13']
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+        id: go
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Get dependencies
+        run: go mod download
+      - name: Format Test
+        run: diff <(gofmt -d ./...) <(echo -n)
+      - name: tests
+        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Codecov
+        run: bash <(curl -s https://codecov.io/bash) -t ${{secrets.CODECOV_TOKEN}} -B master -f "./coverage.txt" -Z
