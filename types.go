@@ -40,8 +40,12 @@ func GetTypes(path string, excludeFilesRegexp *regexp.Regexp, excludeTypesRegexp
 		return nil, err
 	}
 
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+
 	for _, file := range files {
-		fileData, err := parser.ParseFile(token.NewFileSet(), file.Name(), nil, 0)
+		fileData, err := parser.ParseFile(token.NewFileSet(), path+file.Name(), nil, 0)
 		if err != nil {
 			return nil, err
 		}
@@ -112,4 +116,9 @@ func (t *TypeInfo) Is(pt primitiveType) bool {
 type FieldInfo struct {
 	Pointer bool
 	*TypeInfo
+}
+
+type InterfaceInfo struct {
+	Name    string
+	Methods []string
 }
